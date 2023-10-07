@@ -19,8 +19,6 @@ jobs:
       with:
         dirs: "enumset tests"
     - uses: wtnb75/actions/pytest@main
-      with:
-        test-readme: .
     - id: wheel
       uses: wtnb75/actions/wheel@main
     - uses: wtnb75/actions/pypi-upload@main
