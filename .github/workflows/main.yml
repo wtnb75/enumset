@@ -2,7 +2,7 @@ name: main
 
 on:
   push:
-    branches: [main, gh-action2]
+    branches: [main]
 
 jobs:
   build:
@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: wtnb75/actions/python@main
       with:
-        pipinstall: ".[dev]"
+        pipinstall: "-r requirements.txt -r requirements-dev.txt"
     - uses: wtnb75/actions/flake8@main
       with:
         dirs: "enumset tests"
