@@ -1,0 +1,28 @@
+name: main
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: wtnb75/actions/python@main
+      with:
+        pipinstall: ".[dev]"
+    - uses: wtnb75/actions/flake8@main
+      with:
+        dirs: "enumset tests"
+    - uses: wtnb75/actions/pytest@main
+    - uses: wtnb75/actions/wheel@main
+    - uses: wtnb75/actions/merge-pages@main
+      with:
+        dirs: cover
+        pydist: dist
+    - name: deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        publish_dir: ./publish
+        force_orphan: true
