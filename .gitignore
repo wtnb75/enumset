@@ -1,0 +1,9 @@
+*.pyc
+.coverage
+cover
+.pytest_cache
+*.egg-info
+dist
+build
+__pycache__
+test_readme.py
