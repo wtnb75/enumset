@@ -16,10 +16,16 @@ jobs:
       with:
         dirs: "enumset tests"
     - uses: wtnb75/actions/pytest@main
+      with:
+        test-readme: .
     - uses: wtnb75/actions/wheel@main
+    - uses: wtnb75/actions/pdoc@main
+      with:
+        output-dir: doc
+        module: enumset
     - uses: wtnb75/actions/merge-pages@main
       with:
-        dirs: cover
+        dirs: cover doc
         pydist: dist
     - name: deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
