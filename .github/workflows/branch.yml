@@ -20,7 +20,7 @@ jobs:
     - uses: wtnb75/actions/pdoc@main
       with:
         output-dir: doc
-        module: enumset
+        module: ./enumset
     - uses: wtnb75/actions/merge-pages@main
       with:
         dirs: cover doc
