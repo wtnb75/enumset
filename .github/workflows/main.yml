@@ -16,6 +16,8 @@ jobs:
       with:
         dirs: "enumset tests"
     - uses: wtnb75/actions/pytest@main
+      with:
+        test-readme: .
     - uses: wtnb75/actions/wheel@main
     - uses: wtnb75/actions/pdoc@main
       with:
