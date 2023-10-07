@@ -2,7 +2,7 @@ name: main
 
 on:
   push:
-    branches: [main]
+    branches: [main, gh-action2]
 
 jobs:
   build:
@@ -24,5 +24,6 @@ jobs:
     - name: deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
       with:
+        github_token: ${{ github.token }}
         publish_dir: ./publish
         force_orphan: true
