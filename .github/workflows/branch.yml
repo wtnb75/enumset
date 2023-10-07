@@ -15,7 +15,7 @@ jobs:
     - uses: wtnb75/actions/flake8@main
       with:
         dirs: "enumset tests"
-    - uses: wtnb75/actions/pytest@heredoc
+    - uses: wtnb75/actions/pytest@main
       with:
         test-readme: .
     - uses: wtnb75/actions/wheel@main
