@@ -1,85 +1,83 @@
-from typing import Optional
-from enum import Enum, EnumType
+from typing import Iterable
+try:
+    from typing import override
+except ImportError:
+    # Python <3.12
+    def override(fn):
+        return fn
+from enum import Enum
 from logging import getLogger
+from .iface import SetIface
 
 _log = getLogger(__name__)
 
 
-class Enumset:
-    def __init__(self):
-        self.val: int = 0
-        self.keys: list[tuple[str, EnumType]] = []
-
-    def define_enum(self, key: str, et: EnumType) -> None:
-        if key is None:
-            key = et.__name__
-        for k, v in self.keys:
-            if v == et:
-                _log.warning("duplicate type: key=%s", k)
-            if k == key:
-                raise IndexError(f"duplicate key {key}")
-        self.keys.append((key, et))
-
-    def _getkey(self, et: EnumType) -> str:
-        for k, v in self.keys:
-            if v == et:
-                return k
-        raise KeyError(f"type {et} not found")
-
+class Enumset(SetIface):
     def _num(self, key: str, e: Enum) -> int:
         pval = list(type(e)).index(e) + 1
-        for k, v in self.keys:
-            vlen = len(v) + 1
+        for k, _, vt in self.iter_key():
+            vlen = len(vt) + 1
             if k == key:
+                _log.debug("num %s/%s -> %s", key, e, pval)
                 return pval
             pval *= vlen
         raise KeyError(f"key {key} not found")
 
-    def get(self, key: str) -> Optional[Enum]:
+    @override
+    def get(self, key: str) -> Enum:
         cur_val = self.val
-        for k, v in self.keys:
-            vlen = len(v) + 1
+        for k, _, vt in self.iter_key():
+            _log.debug("get iter_key: %s/%s/len=%s", k, vt, len(vt))
+            vlen = len(vt) + 1
             if k == key:
                 vv = cur_val % vlen
                 if vv == 0:
+                    _log.debug("not set: key=%s", key)
                     return None
-                return list(v)[vv-1]
+                _log.debug("set: key=%s, nth=%s", key, vv)
+                return list(vt)[vv-1]
             cur_val //= vlen
         raise KeyError(f"key {key} not found")
 
-    def iteritems(self):
+    @override
+    def items(self) -> Iterable[tuple[str, Enum]]:
         cur_val = self.val
-        for k, v in self.keys:
-            vlen = len(v) + 1
+        for k, _, vt in self.iter_key():
+            _log.debug("items iter_key: %s/%s/len=%s/val=%s",
+                       k, vt, len(vt), cur_val)
+            vlen = len(vt) + 1
             vv = cur_val % vlen
             if vv != 0:
-                yield k, list(v)[vv-1]
+                yield k, list(vt)[vv-1]
             cur_val //= vlen
 
-    def clear(self, key: str):
+    @override
+    def clear(self, key: str) -> bool:
+        _log.debug("clear %s", key)
         v = self.get(key)
-        if v is None:
-            return
-        n = self._num(key, v)
-        self.val -= n
+        if v is not None:
+            n = self._num(key, v)
+            self.val -= n
+            return True
+        return False
 
-    def set(self, key: str, n: Enum):
-        self.clear(key)
+    @override
+    def clear1(self, key: str, e: Enum) -> bool:
+        _log.debug("clear1 %s/%s", key, e)
+        v = self.get(key)
+        if v == e:
+            n = self._num(key, v)
+            self.val -= n
+            return True
+        return False
+
+    def set(self, key: str, n: Enum) -> bool:
+        _log.debug("set %s/%s", key, n)
+        res = self.clear(key)
         self.val += self._num(key, n)
+        _log.debug("clear? %s", res)
+        return res
 
-    # value-only operations
-    def iterval(self):
-        for _, v in self.iteritems():
-            yield v
-
-    def getval(self, et: EnumType) -> Optional[Enum]:
-        k = self._getkey(et)
-        return self.get(k)
-
-    def clearval(self, et: EnumType):
-        k = self._getkey(et)
-        self.clear(k)
-
-    def setval(self, n: Enum):
-        k = self._getkey(type(n))
-        self.set(k, n)
+    def isset(self, key: str, n: Enum):
+        _log.debug("isset %s/%s", key, n)
+        return self.get(key) == n
