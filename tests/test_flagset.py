@@ -29,31 +29,27 @@ class Other(Enum):
 
 class TestFlagset(unittest.TestCase):
     def test_base(self):
-        es = Flagset()
-        es.define_enum("col", Color)
-        es.define_enum("dw", DayWeek)
+        es = Flagset([("col", Color), ("dw", DayWeek)])
         es.set("col", Color.RED)
         es.set("col", Color.GREEN)
         self.assertEqual(list(es.get("col")), [Color.RED, Color.GREEN])
-        self.assertEqual([Color.RED, Color.GREEN], list(es.iterval()))
+        self.assertEqual([Color.RED, Color.GREEN], list(es.values()))
         self.assertEqual(
-            [("col", Color.RED), ("col", Color.GREEN)], list(es.iteritems()))
+            [("col", Color.RED), ("col", Color.GREEN)], list(es.items()))
         self.assertEqual(list(es.get("dw")), [])
         with self.assertRaises(KeyError):
             for _ in es.get("notfound"):
                 pass
         es.clear("col")
 
-    def test_baseval(self):
-        es = Flagset()
-        es.define_enum("col", Color)
-        es.define_enum("dw", DayWeek)
+    def test_keyless2(self):
+        es = Flagset([Color, DayWeek])
         es.setval(Color.RED)
         es.setval(Color.GREEN)
         self.assertEqual(list(es.getval(Color)), [Color.RED, Color.GREEN])
-        self.assertEqual([Color.RED, Color.GREEN], list(es.iterval()))
+        self.assertEqual([Color.RED, Color.GREEN], list(es.values()))
         self.assertEqual(
-            [("col", Color.RED), ("col", Color.GREEN)], list(es.iteritems()))
+            [("Color", Color.RED), ("Color", Color.GREEN)], list(es.items()))
         self.assertEqual(list(es.getval(DayWeek)), [])
         with self.assertRaises(KeyError):
             for _ in es.getval(Other):
@@ -64,26 +60,21 @@ class TestFlagset(unittest.TestCase):
         with self.assertRaises(KeyError):
             es.clearval(Other)
         es.setval(DayWeek.SUN)
-        self.assertEqual({Color.GREEN, DayWeek.SUN}, set(es.iterval()))
+        self.assertEqual({Color.GREEN, DayWeek.SUN}, set(es.values()))
         es.clearval(DayWeek)
-        self.assertEqual([Color.GREEN], list(es.iterval()))
+        self.assertEqual([Color.GREEN], list(es.values()))
 
         self.assertTrue(es.issetval(Color.GREEN))
         self.assertFalse(es.issetval(DayWeek.MON))
 
     def test_dups(self):
-        es = Flagset()
-        es.define_enum("col", Color)
-        es.define_enum("dw", DayWeek)
-        with self.assertLogs(level="WARNING"):
-            es.define_enum("col2", Color)
+        es = Flagset([("col", Color), ("dw", DayWeek)])
+        es.define_key("col2", Color)
         with self.assertRaises(IndexError):
-            es.define_enum("dw", Color)
+            es.define_key("dw", Color)
 
-    def test_keyless(self):
-        es = Flagset()
-        es.define_enum(None, Color)
-        es.define_enum(None, DayWeek)
+    def test_keyless1(self):
+        es = Flagset([Color, DayWeek])
         es.setval(Color.RED)
         es.setval(Color.GREEN)  # RED | GREEN
         es.setval(DayWeek.MON)
@@ -94,4 +85,4 @@ class TestFlagset(unittest.TestCase):
         es.setval(DayWeek.SUN)
         es.clearval1(Color.GREEN)  # RED|GREEN -> RED
         self.assertEqual(list(es.getval(Color)), [Color.RED])
-        self.assertEqual(list(es.iterval()), [Color.RED, DayWeek.SUN])
+        self.assertEqual(list(es.values()), [Color.RED, DayWeek.SUN])

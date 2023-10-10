@@ -26,13 +26,11 @@ class Other(Enum):
 
 class TestEnumset(unittest.TestCase):
     def test_base(self):
-        es = Enumset()
-        es.define_enum("col", Color)
-        es.define_enum("dw", DayWeek)
+        es = Enumset([("col", Color), ("dw", DayWeek)])
         es.set("col", Color.RED)
         self.assertEqual(es.get("col"), Color.RED)
-        self.assertEqual([Color.RED], list(es.iterval()))
-        self.assertEqual([("col", Color.RED)], list(es.iteritems()))
+        self.assertEqual([Color.RED], list(es.values()))
+        self.assertEqual([("col", Color.RED)], list(es.items()))
         self.assertIsNone(es.get("dw"))
         with self.assertRaises(KeyError):
             es.get("notfound")
@@ -40,14 +38,12 @@ class TestEnumset(unittest.TestCase):
             es.set("notfound", Other.A)
         es.clear("col")
 
-    def test_baseval(self):
-        es = Enumset()
-        es.define_enum("col", Color)
-        es.define_enum("dw", DayWeek)
+    def test_keyless2(self):
+        es = Enumset([Color, DayWeek])
         es.setval(Color.RED)
         self.assertEqual(es.getval(Color), Color.RED)
-        self.assertEqual([Color.RED], list(es.iterval()))
-        self.assertEqual([("col", Color.RED)], list(es.iteritems()))
+        self.assertEqual([Color.RED], list(es.values()))
+        self.assertEqual([("Color", Color.RED)], list(es.items()))
         self.assertIsNone(es.getval(DayWeek))
         with self.assertRaises(KeyError):
             es.getval(Other)
@@ -58,23 +54,18 @@ class TestEnumset(unittest.TestCase):
         with self.assertRaises(KeyError):
             es.clearval(Other)
         es.setval(DayWeek.SUN)
-        self.assertEqual({Color.GREEN, DayWeek.SUN}, set(es.iterval()))
+        self.assertEqual({Color.GREEN, DayWeek.SUN}, set(es.values()))
         es.clearval(DayWeek)
-        self.assertEqual([Color.GREEN], list(es.iterval()))
+        self.assertEqual([Color.GREEN], list(es.values()))
 
     def test_dups(self):
-        es = Enumset()
-        es.define_enum("col", Color)
-        es.define_enum("dw", DayWeek)
-        with self.assertLogs(level="WARNING"):
-            es.define_enum("col2", Color)
+        es = Enumset([("col", Color), ("dw", DayWeek)])
+        es.define_key("col2", Color)  # duplicate value: no error
         with self.assertRaises(IndexError):
-            es.define_enum("dw", Color)
+            es.define_key("dw", Color)  # duplicate key: error
 
-    def test_keyless(self):
-        es = Enumset()
-        es.define_enum(None, Color)
-        es.define_enum(None, DayWeek)
+    def test_keyless1(self):
+        es = Enumset([Color, DayWeek])
         es.setval(Color.RED)
         es.setval(DayWeek.MON)
         self.assertEqual(es.getval(Color), Color.RED)
@@ -82,4 +73,4 @@ class TestEnumset(unittest.TestCase):
         es.clearval(DayWeek)
         self.assertIsNone(es.getval(DayWeek))
         es.setval(Color.GREEN)  # RED -> GREEN
-        self.assertEqual([Color.GREEN], list(es.iterval()))
+        self.assertEqual([Color.GREEN], list(es.values()))
