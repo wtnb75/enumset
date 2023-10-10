@@ -2,6 +2,7 @@ from typing import Iterable
 try:
     from typing import override
 except ImportError:
+    # Python <3.12
     def override(fn):
         return fn
 from enum import Enum
