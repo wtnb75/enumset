@@ -1,5 +1,5 @@
-from typing import Optional, Iterable, override
-from enum import Enum, EnumType
+from typing import Iterable, override
+from enum import Enum
 from logging import getLogger
 from .iface import SetIface
 
