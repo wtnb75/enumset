@@ -1,4 +1,10 @@
-from typing import Optional, Iterable, override
+from typing import Optional, Iterable
+try:
+    from typing import override
+except ImportError:
+    def override(fn):
+        return fn
+
 from enum import Enum, EnumType
 from logging import getLogger
 from .iface import SetIface
