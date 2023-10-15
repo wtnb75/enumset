@@ -11,23 +11,23 @@ collection of Enum classes.
 Enumset stores multiple Enum-class value, each value in Enum-class should be unique.
 
 ```python
-from enum import Enum, auto
+from enum import Enum, Flag
 from enumset import Enumset
 
-class A(Enum):
-    A1 = auto();A2 = auto();A3 = auto()
+A = Enum("A", "A1 A2 A3")
+B = Enum("B", "B1 B2")
+C = Flag("C", "C1 C2 C3 C4")
 
-class B(Enum):
-    B1 = auto();B2 = auto()
-
-es = Enumset([A, B])
+es = Enumset([A, B, C])
 es.setval(A.A1)
 es.setval(B.B2)
-assert list(es.values()) == [A.A1, B.B2]
+es.setval(C.C3)
+assert list(es.values()) == [A.A1, B.B2, C.C3]
 assert es.getval(A) == A.A1
 
 es.setval(A.A2)   # replace A1 -> A2
-assert list(es.values()) == [A.A2, B.B2]
+es.setval(C.C4)   # replace C3 -> C4
+assert list(es.values()) == [A.A2, B.B2, C.C4]
 assert es.getval(A) == A.A2
 ```
 
@@ -36,25 +36,26 @@ assert es.getval(A) == A.A2
 Flagset stores multiple Enum-class value, like `set[Enum]`.
 
 ```python
-from enum import Enum, auto
+from enum import Enum, Flag
 from enumset import Flagset
 
-class A(Enum):
-    A1 = auto();A2 = auto();A3 = auto()
+A = Enum("A", "A1 A2 A3")
+B = Enum("B", "B1 B2")
+C = Flag("C", "C1 C2 C3 C4")
 
-class B(Enum):
-    B1 = auto();B2 = auto()
-
-fs = Flagset([A, B])
+fs = Flagset([A, B, C])
 fs.setval(A.A1)
 fs.setval(B.B2)
-assert list(fs.values()) == [A.A1, B.B2]
+fs.setval(C.C3)
+assert list(fs.values()) == [A.A1, B.B2, C.C3]
 assert list(fs.getval(A)) == [A.A1]
 
 fs.setval(A.A2)   # A1+A2
-assert list(fs.values()) == [A.A1, A.A2, B.B2]
+fs.setval(C.C4)   # C3+C4
+assert list(fs.values()) == [A.A1, A.A2, B.B2, C.C3, C.C4]
 assert list(fs.getval(A)) == [A.A1, A.A2]
+assert list(fs.getval(C)) == [C.C3, C.C4]
 
 fs.setval(A.A2)   # A2 already exists
-assert list(fs.values()) == [A.A1, A.A2, B.B2]
+assert list(fs.values()) == [A.A1, A.A2, B.B2, C.C3, C.C4]
 ```

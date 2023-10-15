@@ -36,7 +36,7 @@ class TestEnumset(unittest.TestCase):
             es.get("notfound")
         with self.assertRaises(KeyError):
             es.set("notfound", Other.A)
-        es.clear("col")
+        es.clearkey("col")
 
     def test_keyless2(self):
         es = Enumset([Color, DayWeek])
