@@ -6,3 +6,7 @@ cover
 dist
 build
 __pycache__
+
+# pytest-readme
+/conftest.py
+/test_readme.py

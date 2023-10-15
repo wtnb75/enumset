@@ -40,7 +40,7 @@ class TestFlagset(unittest.TestCase):
         with self.assertRaises(KeyError):
             for _ in es.get("notfound"):
                 pass
-        es.clear("col")
+        es.clearkey("col")
 
     def test_keyless2(self):
         es = Flagset([Color, DayWeek])

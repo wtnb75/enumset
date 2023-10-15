@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional
 try:
     from typing import override
 except ImportError:
@@ -24,8 +24,8 @@ class Enumset(SetIface):
         raise KeyError(f"key {key} not found")
 
     @override
-    def get(self, key: str) -> Enum:
-        cur_val = self.val
+    def get(self, key: str) -> Optional[Enum]:
+        cur_val = self._val
         for k, _, vt in self.iter_key():
             _log.debug("get iter_key: %s/%s/len=%s", k, vt, len(vt))
             vlen = len(vt) + 1
@@ -41,7 +41,7 @@ class Enumset(SetIface):
 
     @override
     def items(self) -> Iterable[tuple[str, Enum]]:
-        cur_val = self.val
+        cur_val = self._val
         for k, _, vt in self.iter_key():
             _log.debug("items iter_key: %s/%s/len=%s/val=%s",
                        k, vt, len(vt), cur_val)
@@ -52,12 +52,12 @@ class Enumset(SetIface):
             cur_val //= vlen
 
     @override
-    def clear(self, key: str) -> bool:
-        _log.debug("clear %s", key)
+    def clearkey(self, key: str) -> bool:
+        _log.debug("clearkey %s", key)
         v = self.get(key)
         if v is not None:
             n = self._num(key, v)
-            self.val -= n
+            self._val -= n
             return True
         return False
 
@@ -67,14 +67,14 @@ class Enumset(SetIface):
         v = self.get(key)
         if v == e:
             n = self._num(key, v)
-            self.val -= n
+            self._val -= n
             return True
         return False
 
     def set(self, key: str, n: Enum) -> bool:
         _log.debug("set %s/%s", key, n)
-        res = self.clear(key)
-        self.val += self._num(key, n)
+        res = self.clearkey(key)
+        self._val += self._num(key, n)
         _log.debug("clear? %s", res)
         return res
 
