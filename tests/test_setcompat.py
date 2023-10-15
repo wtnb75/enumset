@@ -133,3 +133,23 @@ class TestSetCompat(unittest.TestCase):
         a = abak
         with self.subTest("remove2"):
             self.sub2(a, C.C3, C.C2)
+
+    def test_enum_pop(self):
+        a = Enumset([A, B, C])
+        a.update([A.A1, C.C3])
+        self.assertIn(a.pop(), [A.A1, C.C3])
+        self.assertIn(a.pop(), [A.A1, C.C3])
+        with self.assertRaises(KeyError):
+            a.pop()
+        self.assertEqual(0, len(a))
+
+    def test_flage_pop(self):
+        a = Flagset([A, B, C])
+        a.update([A.A1, B.B2, C.C3, C.C4])
+        self.assertIn(a.pop(), [A.A1, B.B2, C.C3, C.C4])
+        self.assertIn(a.pop(), [A.A1, B.B2, C.C3, C.C4])
+        self.assertIn(a.pop(), [A.A1, B.B2, C.C3, C.C4])
+        self.assertIn(a.pop(), [A.A1, B.B2, C.C3, C.C4])
+        with self.assertRaises(KeyError):
+            a.pop()
+        self.assertEqual(0, len(a))
