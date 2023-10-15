@@ -1,4 +1,4 @@
-from typing import Optional, Iterable
+from typing import Iterable
 try:
     from typing import override
 except ImportError:
