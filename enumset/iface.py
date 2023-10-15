@@ -208,3 +208,23 @@ class SetIface(metaclass=ABCMeta):
         return {x for x in self.values()} ^ {x for x in other.values()}
 
     __xor__ = symmetric_difference
+
+    # repr/str
+    def __str__(self):
+        return "{}({})".format(self.__class__.__name__, set(self))
+
+    def __repr__(self):
+        return "{}({}, {})".format(self.__class__.__name__, list(self._keys.keys()), set(self))
+
+    # pickle/yaml
+    def __getstate__(self):
+        return {
+            "keys": [(x[0], x[1][0]) for x in self._keys.items()],
+            "val": self._val,
+        }
+
+    def __setstate__(self, d):
+        self._keys = OrderedDict()
+        for k, vt in d["keys"]:
+            self.define_key(k, vt)
+        self._val = d["val"]
