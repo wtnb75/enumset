@@ -6,22 +6,24 @@ on:
     - 'v*'
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: versioning
       run: "echo \"VERSION = '${GITHUB_REF##*/v}'\" > enumset/version.py"
-    - uses: wtnb75/actions/python@main
-      with:
-        pipinstall: ".[dev]"
-    - uses: wtnb75/actions/flake8@main
-      with:
-        dirs: "enumset tests"
-    - uses: wtnb75/actions/pytest@main
+    - uses: wtnb75/actions/python@d46e83a56abd145ef1af4a26bc9837ecd8ca4598 # v1.0.7
+    - uses: wtnb75/actions/ruff@d46e83a56abd145ef1af4a26bc9837ecd8ca4598 # v1.0.7
+    - uses: wtnb75/actions/pytest@d46e83a56abd145ef1af4a26bc9837ecd8ca4598 # v1.0.7
     - id: wheel
-      uses: wtnb75/actions/wheel@main
-    - uses: wtnb75/actions/pypi-upload@main
+      uses: wtnb75/actions/wheel@d46e83a56abd145ef1af4a26bc9837ecd8ca4598 # v1.0.7
+    - id: pdoc
+      uses: wtnb75/actions/pdoc@d46e83a56abd145ef1af4a26bc9837ecd8ca4598 # v1.0.7
+      with:
+        output-dir: docs
+        module: enumset
+        other-options: --docformat google
+    - uses: wtnb75/actions/pypi-upload@d46e83a56abd145ef1af4a26bc9837ecd8ca4598 # v1.0.7
       with:
         username: ${{ secrets.TWINE_USERNAME }}
         password: ${{ secrets.TWINE_PASSWORD }}

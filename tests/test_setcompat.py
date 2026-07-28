@@ -1,6 +1,7 @@
 import unittest
-from enumset import Enumset, Flagset, SetIface
 from enum import Enum, Flag
+
+from enumset import Enumset, Flagset, SetIface
 
 A = Enum("A", "A1 A2 A3")
 B = Enum("B", "B1 B2")
@@ -56,10 +57,10 @@ class TestSetCompat(unittest.TestCase):
         self.assertEqual(oldlen, len(a))
         a.remove(n_in_a)
         self.assertFalse(n_in_a in a)
-        self.assertEqual(oldlen-1, len(a))
+        self.assertEqual(oldlen - 1, len(a))
         a.add(n_in_a)
         a.discard(n_in_a)
-        self.assertEqual(oldlen-1, len(a))
+        self.assertEqual(oldlen - 1, len(a))
 
     def sub1_2(self, a: SetIface):
         self.assertNotEqual(0, len(a))

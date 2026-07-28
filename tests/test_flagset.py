@@ -1,7 +1,8 @@
 import unittest
-from enumset import Flagset
 from enum import Enum, auto
 from logging import getLogger
+
+from enumset import Flagset
 
 _log = getLogger(__name__)
 
@@ -34,8 +35,7 @@ class TestFlagset(unittest.TestCase):
         es.set("col", Color.GREEN)
         self.assertEqual(list(es.get("col")), [Color.RED, Color.GREEN])
         self.assertEqual([Color.RED, Color.GREEN], list(es.values()))
-        self.assertEqual(
-            [("col", Color.RED), ("col", Color.GREEN)], list(es.items()))
+        self.assertEqual([("col", Color.RED), ("col", Color.GREEN)], list(es.items()))
         self.assertEqual(list(es.get("dw")), [])
         with self.assertRaises(KeyError):
             for _ in es.get("notfound"):
@@ -49,7 +49,8 @@ class TestFlagset(unittest.TestCase):
         self.assertEqual(list(es.getval(Color)), [Color.RED, Color.GREEN])
         self.assertEqual([Color.RED, Color.GREEN], list(es.values()))
         self.assertEqual(
-            [("Color", Color.RED), ("Color", Color.GREEN)], list(es.items()))
+            [("Color", Color.RED), ("Color", Color.GREEN)], list(es.items())
+        )
         self.assertEqual(list(es.getval(DayWeek)), [])
         with self.assertRaises(KeyError):
             for _ in es.getval(Other):

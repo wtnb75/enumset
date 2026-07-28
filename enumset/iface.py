@@ -1,15 +1,14 @@
-from typing import Union, Iterable
-from collections.abc import Collection
-from enum import Enum, EnumType
-from abc import abstractmethod, ABCMeta
+from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
+from collections.abc import Collection, Iterable
+from enum import Enum, EnumType
 
 
 class SetIface(metaclass=ABCMeta):
-    def __init__(self, kvs: list[Union[EnumType, tuple[str, EnumType]]] = []):
+    def __init__(self, kvs: list[EnumType | tuple[str, EnumType]] | None = None):
         self._val: int = 0
         self._keys: OrderedDict[str, tuple[EnumType, int]] = OrderedDict()
-        for kv in kvs:
+        for kv in kvs or []:
             if isinstance(kv, (list, tuple)) and len(kv) == 2:
                 k, vt = kv
             elif isinstance(kv, EnumType):
@@ -41,14 +40,14 @@ class SetIface(metaclass=ABCMeta):
         raise NotImplementedError("items")
 
     def values(self) -> Iterable[Enum]:
-        for _, v in self.items():
+        for _, v in self.items():  # noqa: PERF102 -- items() is this class's own abstract method, not a dict
             yield v
 
     def keys(self) -> Iterable[str]:
         return self._keys.keys()
 
     @abstractmethod
-    def get(self, key: str) -> Union[None, Enum, Iterable[Enum]]:
+    def get(self, key: str) -> None | Enum | Iterable[Enum]:
         raise NotImplementedError("get")
 
     @abstractmethod
@@ -68,7 +67,7 @@ class SetIface(metaclass=ABCMeta):
         raise NotImplementedError("clear")
 
     # value-only ops
-    def getval(self, et: EnumType) -> Union[None, Enum, Iterable[Enum]]:
+    def getval(self, et: EnumType) -> None | Enum | Iterable[Enum]:
         return self.get(et.__name__)
 
     def clearval(self, et: EnumType):
@@ -211,10 +210,10 @@ class SetIface(metaclass=ABCMeta):
 
     # repr/str
     def __str__(self):
-        return "{}({})".format(self.__class__.__name__, set(self))
+        return f"{self.__class__.__name__}({set(self)})"
 
     def __repr__(self):
-        return "{}({}, {})".format(self.__class__.__name__, list(self._keys.keys()), set(self))
+        return f"{self.__class__.__name__}({list(self._keys.keys())}, {set(self)})"
 
     # pickle/yaml
     def __getstate__(self):
