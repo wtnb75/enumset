@@ -1,12 +1,16 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
+
 try:
     from typing import override
 except ImportError:
     # Python <3.12
     def override(fn):
         return fn
+
+
 from enum import Enum
 from logging import getLogger
+
 from .iface import SetIface
 
 _log = getLogger(__name__)
@@ -24,7 +28,7 @@ class Enumset(SetIface):
         raise KeyError(f"key {key} not found")
 
     @override
-    def get(self, key: str) -> Optional[Enum]:
+    def get(self, key: str) -> Enum | None:
         cur_val = self._val
         for k, _, vt in self.iter_key():
             _log.debug("get iter_key: %s/%s/len=%s", k, vt, len(vt))
@@ -35,7 +39,7 @@ class Enumset(SetIface):
                     _log.debug("not set: key=%s", key)
                     return None
                 _log.debug("set: key=%s, nth=%s", key, vv)
-                return list(vt)[vv-1]
+                return list(vt)[vv - 1]
             cur_val //= vlen
         raise KeyError(f"key {key} not found")
 
@@ -43,12 +47,11 @@ class Enumset(SetIface):
     def items(self) -> Iterable[tuple[str, Enum]]:
         cur_val = self._val
         for k, _, vt in self.iter_key():
-            _log.debug("items iter_key: %s/%s/len=%s/val=%s",
-                       k, vt, len(vt), cur_val)
+            _log.debug("items iter_key: %s/%s/len=%s/val=%s", k, vt, len(vt), cur_val)
             vlen = len(vt) + 1
             vv = cur_val % vlen
             if vv != 0:
-                yield k, list(vt)[vv-1]
+                yield k, list(vt)[vv - 1]
             cur_val //= vlen
 
     @override

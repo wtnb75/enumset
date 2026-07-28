@@ -1,9 +1,12 @@
-import unittest
-from enumset import Enumset, Flagset
-from enum import Flag, Enum
 import pickle
+import unittest
+from enum import Enum, Flag
+
+from enumset import Enumset, Flagset
+
 try:
     import yaml
+
     have_yaml = True
 except ImportError:
     have_yaml = False

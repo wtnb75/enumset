@@ -1,6 +1,7 @@
 import unittest
-from enumset import Enumset
 from enum import Enum, auto
+
+from enumset import Enumset
 
 
 class Color(Enum):
